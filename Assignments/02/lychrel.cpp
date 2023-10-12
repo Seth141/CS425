@@ -9,7 +9,10 @@
 //  The program reports a list of numbers that share the maximum number of
 //    iterations, along with the size and final palindrome number
 //
+//  Best running time was 1m8.800s using the final set
 #include <algorithm>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <vector>
 #include <thread>
@@ -27,22 +30,26 @@ using Records = std::vector<Record>;
 const size_t MaxIterations = 7500;
 const size_t MaxThreads = 10;
 
+std::mutex dataMutex; 
 std::mutex recordsMutex;
+std::condition_variable condVar;
 size_t current_index = 0;
 
+// This is a worker function that will be executed by each thread
 void worker(LychrelData& data, size_t& maxIter, Records& records) {
     while (true) {
-        Number number;
-        {
-            std::unique_lock<std::mutex> lock(recordsMutex);
-            if (current_index >= data.size()) {
-                return;
-            }
-            number = data[current_index++];
+        dataMutex.lock();
+        if (current_index >= data.size()) {
+            dataMutex.unlock();
+            return;
         }
+        Number number = data[current_index++];
+        dataMutex.unlock();
 
         size_t iter = 0;
         Number n = number;
+        
+        //While loop for palindrome verification:
         while (!n.is_palindrome() && ++iter < MaxIterations) {
             Number sum(n.size());
             Number r = n.reverse();
@@ -52,8 +59,10 @@ void worker(LychrelData& data, size_t& maxIter, Records& records) {
             std::transform(n.rbegin(), n.rend(), sum.rbegin(),
                 [&](auto d) {
                     auto v = d + *rd++ + carry;
+    
                     carry = v > 9;
                     if (carry) { v -= 10; }
+    
                     return v;
                 }
             );
@@ -61,16 +70,20 @@ void worker(LychrelData& data, size_t& maxIter, Records& records) {
             n = sum;
         }
 
-        std::unique_lock<std::mutex> lock(recordsMutex);
+        recordsMutex.lock();
         if (iter < maxIter || iter == MaxIterations) {
+            recordsMutex.unlock();
             continue;
         }
+
         Record record{number, n};
         if (iter > maxIter) {
             records.clear();
             maxIter = iter;
         }
         records.push_back(record);
+        // Unlocking dataMutex after accessing the shared data here: 
+        recordsMutex.unlock();
     }
 }
 
@@ -94,3 +107,4 @@ int main() {
         std::cout << "\t" << number << " : [" << palindrome.size() << "] " << palindrome << "\n";
     }
 }
+
