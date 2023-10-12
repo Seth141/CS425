@@ -5,7 +5,7 @@ TARGETS = $(SOURCE:.cpp=)
 HEADERS = Number.h
 
 STD = -std=c++20
-OPTIMIZER = -O3
+OPTIMIZER = -Ofast
 CXXFLAGS = $(STD) $(OPTIMIZER)
 
 default: $(TARGETS)
