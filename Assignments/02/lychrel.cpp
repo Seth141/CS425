@@ -9,7 +9,7 @@
 //  The program reports a list of numbers that share the maximum number of
 //    iterations, along with the size and final palindrome number
 //
-//  Best running time was 1m8.800s using the final set
+//  Best running time was 1m8.267s using the final set
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
