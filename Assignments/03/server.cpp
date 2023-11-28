@@ -1,11 +1,11 @@
 #include <iostream>
-#include <thread>  // Include for std::thread
+#include <thread>  
 #include "Connection.h"
 #include "HTTPRequest.h"
 #include "HTTPResponse.h"
 
-const uint16_t DefaultPort = 8143; // Update this variable with your assigned port value
-const size_t BufferSize = 1000;  
+const uint16_t DefaultPort = 8143; // My new port value
+const size_t BufferSize = 1000;  // May alter this size when done
 
 //
 //Still working on this and testing: 
@@ -14,7 +14,7 @@ const size_t BufferSize = 1000;
 template<typename T, size_t Size>
 class RingBuffer {
 public:
-    bool push(const T& item) {
+    bool pushing(const T& item) {
         auto current_tail = tail.load(std::memory_order_relaxed);
         auto next_tail = increment(current_tail);
         if (next_tail != head.load(std::memory_order_acquire)) {
@@ -23,6 +23,20 @@ public:
             return true;
         }
         return false;  // Buffer is full
+    }
+*/
+
+
+/*
+bool popping(T& item) {
+        auto current_head = head.load(std::memory_order_relaxed);
+        if (current_head == tail.load(std::memory_order_acquire)) {
+            return false;  // Buffer is empty
+        }
+
+        item = buffer[current_head];
+        head.store(increment(current_head), std::memory_order_release);
+        return true;
     }
 */
 
