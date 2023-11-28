@@ -6,7 +6,7 @@ Here's a table showing the improvements I did to make the application go faster.
 | :-----: | ---- | ------- |
 | 01 | 4.8 minutes | Initial version - no changes |
 | 02 | 44.75 seconds | Implemented basic threading for each connection. |
-| 03 | 1m8.267s | mostly same code, but for the mutexes, I found that using the plain mutex.lock and mutex.unlock statements worked better for this data set. |
+
 
 ## Profiling Analysis
 
